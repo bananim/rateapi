@@ -2,7 +2,9 @@ package com.mywork.rateapi.resource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -19,10 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.mywork.rateapi.model.ExchangeRate;
+import com.mywork.rateapi.model.HistoricalRateDetails;
 import com.mywork.rateapi.model.RateDetails;
 import com.mywork.rateapi.services.RateService;
 
-@RestController
+@Controller
 @RequestMapping("/exchange")
 public class RateApiResource {
 
@@ -48,9 +51,34 @@ public class RateApiResource {
 	}
 
 	@RequestMapping("/pastrates")
-	public List<ExchangeRate> getPastExchangeRate(@RequestParam(value = "ccy") String[] currencyString) {
+	public String getPastExchangeRate(@RequestParam(value = "ccy") String[] currencyString, Model model) {
 		List<ExchangeRate> exRateList = rateService.getHistoricalRate(Arrays.asList(currencyString));
-		return exRateList;
+		HistoricalRateDetails hrDetails =  historicalRateDetails(exRateList);
+		model.addAttribute("histRateDetails", hrDetails.getCurrencyRateMap());
+		return "rateHist";
 	}
-	
+
+	private HistoricalRateDetails historicalRateDetails(List<ExchangeRate> exRateList) {
+		HistoricalRateDetails historicalRateDetails = new HistoricalRateDetails();
+		Map<String, List<RateDetails>> currencyRateMap = new HashMap<>();
+
+		for (ExchangeRate exRate : exRateList) {
+			exRate.getRates().forEach((String ccyVal, Double rateVal) -> {
+
+				List<RateDetails> list = currencyRateMap.get(ccyVal);
+				if (list == null || list.isEmpty()) {
+					List<RateDetails> listTmp = new ArrayList<>();
+					listTmp.add(new RateDetails(ccyVal, rateVal + "", exRate.getDate()));
+					currencyRateMap.put(ccyVal, listTmp);
+				} else {
+					currencyRateMap.get(ccyVal).add(new RateDetails(ccyVal, rateVal + "", exRate.getDate()));
+				}
+			});
+
+		}
+
+		historicalRateDetails.setCurrencyRateMap(currencyRateMap);
+		return historicalRateDetails;
+	}
+
 }

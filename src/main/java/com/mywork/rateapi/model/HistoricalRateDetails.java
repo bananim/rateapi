@@ -4,23 +4,13 @@ import java.util.List;
 import java.util.Map;
 
 public class HistoricalRateDetails {
-	Map<String, List<Double>> currencyRateMap;
-	String date;
-
-	public Map<String, List<Double>> getCurrencyRateMap() {
+	Map<String, List<RateDetails>> currencyRateMap;
+	
+	public Map<String, List<RateDetails>> getCurrencyRateMap() {
 		return currencyRateMap;
 	}
 
-	public void setCurrencyRateMap(Map<String, List<Double>> currencyRateMap) {
+	public void setCurrencyRateMap(Map<String, List<RateDetails>> currencyRateMap) {
 		this.currencyRateMap = currencyRateMap;
 	}
-
-	public String getDate() {
-		return date;
-	}
-
-	public void setDate(String date) {
-		this.date = date;
-	}
-
 }
