@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Get Current and Historical Rates From Euro</title>
+<style>
+table, th, td {
+	border: 1px solid black;
+	border-collapse: collapse;
+}
+
+th, td {
+	padding: 5px;
+}
+
+th {
+	text-align: left;
+}
+</style>
+</head>
+<body>
+	<table style="width: 100%">
+		<tr>
+			<th>Currency</th>
+			<th>Rate</th>
+			<th>Date</th>
+		</tr>
+		<tr th:if="${rateDetails.empty}">
+			<td colspan="2">No Rate Available</td>
+		</tr>
+		<tr th:each="rd : ${rateDetails}">
+			<td><span th:text="${rd.currency}">Currency</span></td>
+			<td><span th:text="${rd.rate}">Rate</span></td>
+			<td><span th:text="${rd.date}">Date</span></td>
+		</tr>
+	</table>
+</body>
+</html>
